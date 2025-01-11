@@ -3,7 +3,7 @@ from game.pieces import Rock, Knight, Bishop, Queen, King, Pawn
 
 available_pieces = ['Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Pawn']
 available_pos_states = ['Empty', 'null']
-available_game_states = ['CheckmateWhite', 'CheckmateBlack', 'Stalemate', 'PlayingBlack', 'PlayingBlack', 'Kingnull']
+available_game_states = ['CheckmateWhite', 'CheckmateBlack', 'Stalemate', 'PlayingBlack', 'PlayingBlack', 'KingInCheckWhite', 'KingInCheckBlack']
 
 class BoardFaker:
     def __init__(self):
