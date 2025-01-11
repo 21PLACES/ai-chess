@@ -122,7 +122,7 @@ class Rook:
     def get_atacking_pieces(self, board):
         return get_attacked_pieces(board, self.position, self.kernel, self.kernelType)           
     def get_name(self):
-        return self.color+ ' Rook'
+        return ' Rook'
     
 
         
@@ -148,7 +148,25 @@ class Knight:
     def get_atacking_pieces(self, board):
         return get_attacked_pieces(board, self.position, self.kernel, self.kernelType)    
     def get_name(self):
-        return self.color + ' Knight'
+        return ' Knight'
+    
+    def is_valid_move(self, new_position, board):
+        x1, y1 = self.position
+        x2, y2 = new_position
+
+        if not is_valid_boundary(x2, y2):
+            return False
+
+        if is_same_position(self.position, new_position):
+            return False
+
+        if (x2, y2) not in [(x1 + dx, y1 + dy) for dx, dy in self.kernel]:
+            return False
+
+        if board[x2][y2] == "Empty" or board[x2][y2].color != self.color:
+            return True
+        return False
+    
 
 class Bishop:
     def __init__(self, position, color):
@@ -167,7 +185,33 @@ class Bishop:
     def get_atacking_pieces(self, board):
         return get_attacked_pieces(board, self.position, self.kernel, self.kernelType)    
     def get_name(self):
-        return self.color + ' Bishop'
+        return ' Bishop'
+    def is_valid_move(self, new_position, board):
+        x1, y1 = self.position
+        x2, y2 = new_position
+
+        if not is_valid_boundary(x2, y2):
+            return False
+
+        if is_same_position(self.position, new_position):
+            return False
+
+        if abs(x1 - x2) != abs(y1 - y2):
+            return False
+
+        dx = 1 if x2 > x1 else -1
+        dy = 1 if y2 > y1 else -1
+
+        x, y = x1 + dx, y1 + dy
+        while x != x2:
+            if board[x][y] != "Empty":
+                return False
+            x += dx
+            y += dy
+
+        if board[x2][y2] == "Empty" or board[x2][y2].color != self.color:
+            return True
+        return False
 
 class Queen:
     def __init__(self, position, color):
@@ -179,7 +223,53 @@ class Queen:
                 ]  
         self.kernelType = 'Continuous'
     def get_name(self):
-        return self.color + ' Queen'
+        return ' Queen'
+    def get_kernel(self):
+        return self.kernel
+    def get_kernel_type(self):
+        return self.kernelType
+    def get_position(self):
+        return self.position
+    def get_color(self):
+        return self.color
+    def get_atacking_pieces(self, board):
+        return get_attacked_pieces(board, self.position, self.kernel, self.kernelType)    
+    def is_valid_move(self, new_position, board):
+        x1, y1 = self.position
+        x2, y2 = new_position
+
+        if not is_valid_boundary(x2, y2):
+            return False
+
+        if is_same_position(self.position, new_position):
+            return False
+
+        if x1 != x2 and y1 != y2 and abs(x1 - x2) != abs(y1 - y2):
+            return False
+
+        if x1 == x2:
+            for y in range(min(y1, y2) + 1, max(y1, y2)):
+                if board[x1][y] != "Empty":
+                    return False
+        elif y1 == y2:
+            for x in range(min(x1, x2) + 1, max(x1, x2)):
+                if board[x][y1] != "Empty":
+                    return False
+        else:
+            dx = 1 if x2 > x1 else -1
+            dy = 1 if y2 > y1 else -1
+
+            x, y = x1 + dx, y1 + dy
+            while x != x2:
+                if board[x][y] != "Empty":
+                    return False
+                x += dx
+                y += dy
+
+        if board[x2][y2] == "Empty" or board[x2][y2].color != self.color:
+            return True
+        return False
+
 
 class King:
     def __init__(self, position, color):
@@ -190,13 +280,44 @@ class King:
         self.kernelType = 'Discrete'
         self.isUnderAttack = False
     def get_name(self):
-        return self.color + ' King'
+        return ' King'
+    def get_name(self):
+        return ' Queen'
+    def get_kernel(self):
+        return self.kernel
+    def get_kernel_type(self):
+        return self.kernelType
+    def get_position(self):
+        return self.position
+    def get_color(self):
+        return self.color
+    def get_atacking_pieces(self, board):
+        return get_attacked_pieces(board, self.position, self.kernel, self.kernelType)
+    def is_valid_move(self, new_position, board):
+        x1, y1 = self.position
+        x2, y2 = new_position
+
+        if not is_valid_boundary(x2, y2):
+            return False
+
+        if is_same_position(self.position, new_position):
+            return False
+
+        if (x2, y2) not in [(x1 + dx, y1 + dy) for dx, dy in self.kernel]:
+            return False
+
+        if board[x2][y2] == "Empty" or board[x2][y2].color != self.color:
+            return True
+        return False
+    
+    
 
 class Pawn:
     def __init__(self, position, color):
         self.position = position
         self.kernelType = 'Discrete'
         self.isUnderAttack = False
+        self.canJump = True
         self.color = color
         if color == 'white':
             self.kernel = [(-1, -1), (-1, 1)]
@@ -204,4 +325,50 @@ class Pawn:
             self.kernel = [(1, -1), (1, 1)]
     
     def get_name(self):
-        return self.color + ' Pawn'    
+        return ' Pawn'    
+    def get_kernel(self):
+        return self.kernel
+    def get_kernel_type(self):
+        return self.kernelType
+    def get_position(self):
+        return self.position
+    def get_color(self):
+        return self.color
+    def get_atacking_pieces(self, board):
+        return get_attacked_pieces(board, self.position, self.kernel, self.kernelType)
+    def set_jump(self, jump):
+        self.canJump = jump
+    def is_valid_move(self, new_position, board):
+        x1, y1 = self.position
+        x2, y2 = new_position
+
+        if not is_valid_boundary(x2, y2):
+            return False
+
+        if is_same_position(self.position, new_position):
+            return False
+
+        if self.color == 'white':
+            if x1 == 6 and x2 == 4 and y1 == y2 and board[4][y1] == 'Empty' and board[5][y1] == 'Empty':
+                self.canJump = False
+                return True
+            if x2 != x1 - 1 or y2 != y1:
+                return False
+            if board[x2][y2] == "Empty":
+                return True
+            if board[x2][y2].color != self.color:
+                return True
+        else:
+            if x1 == 1 and x2 == 3 and y1 == y2 and board[3][y1] == 'Empty' and board[2][y1] == 'Empty':
+                self.canJump = False
+                return True
+            if x2 != x1 + 1 or y2 != y1:
+                return False
+            if board[x2][y2] == "Empty":
+                return True
+            if board[x2][y2].color != self.color:
+                return True
+        
+        return False
+       
+    

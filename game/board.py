@@ -43,9 +43,12 @@ class BoardFaker:
         if piece == 'Empty':
             return
         if piece.get_color() != self.turn:
+            print("Not your turn")
             return
         
         if not piece.is_valid_move(destination, self.board):
+            print(piece.get_name())
+            print("Invalid move")
             return
         
         self.board[destination[0]][destination[1]] = piece
@@ -60,5 +63,11 @@ board_faker = BoardFaker()
 board_faker.print_board()
 
 rook = board_faker.get_piece_by_position([0, 0])
+
+
+
+board_faker.move_piece([6, 6], [4, 6])
+print("After move")
+board_faker.print_board()
 
 print(get_attacked_pieces(board_faker.board, [0, 0], rook.get_kernel(),  rook.get_kernel_type(), rook.get_color()))
