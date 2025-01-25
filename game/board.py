@@ -34,6 +34,18 @@ class BoardFaker:
                     print(piece, end=' ')
             print('\n')
     
+    def get_board(self):
+        return self.board
+    
+    def check_is_in_check(self, color):
+        for row in range(8):
+            for col in range(8):
+                piece = self.board[row][col]
+                if piece != 'Empty' and piece.get_color() == color:
+                    if piece.get_name() == 'King':
+                        if piece.is_in_check(self.board):
+                            return True
+        return False
     
     def get_piece_by_position(self, position):
         return get_piece_by_position(self.board, position)        
@@ -54,7 +66,12 @@ class BoardFaker:
         self.board[destination[0]][destination[1]] = piece
         self.board[origin[0]][origin[1]] = 'Empty'
         piece.position = destination
-        self.gameState = 'PlayingBlack' if self.gameState == 'PlayingWhite' else 'PlayingWhite'
+        if self.gameState == 'PlayingWhite': 
+            self.gameState = 'PlayingBlack'
+            self.turn = 'black'
+        else:
+            self.gameState = 'PlayingWhite'
+            self.turn = 'white'
             
 
 
@@ -66,8 +83,5 @@ rook = board_faker.get_piece_by_position([0, 0])
 
 
 
-board_faker.move_piece([6, 6], [4, 6])
-print("After move")
-board_faker.print_board()
 
 print(get_attacked_pieces(board_faker.board, [0, 0], rook.get_kernel(),  rook.get_kernel_type(), rook.get_color()))
